@@ -1,0 +1,34 @@
+.container {
+    margin-top: 40px;
+    text-align: center;
+}
+
+@media only screen and (max-width: 1150px) {
+    .table1 {
+        overflow: scroll;
+    }
+}
+
+.col1 {
+    margin: 0;
+    background-color: transparent;
+    text-align: center;
+}
+
+.btn1 {
+    text-align: right;
+}
+
+#bold {
+    position: relative;
+    top: 10px;
+    left: -200px;
+}
+
+.mand {
+    color: red
+}
+
+input {
+    width: 300px;
+}

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .container {
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        @media only screen and (max-width: 1150px) {
+            .table1 {
+                overflow: scroll;
+            }
+            .top {
+                margin-top: 10px;
+            }
+        }
+        
+        .col1 {
+            margin: 0;
+            background-color: transparent;
+            text-align: center;
+        }
+        
+        .btn1 {
+            text-align: right;
+        }
+        
+        #bold {
+            position: relative;
+            top: 50px;
+        }
+        
+        .mand {
+            color: red
+        }
+        
+        .bold {
+            text-align: center;
+        }
+        
+        input {
+            width: 300px;
+        }
+        
+        .table-dark {
+            border: 5px solid lightgrey;
+            float: left;
+        }
+        
+        table.center {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .nav-link1 {
+            margin-top: 10px;
+            color: white
+        }
+        
+        .float-right {
+            margin-left: auto;
+            margin-right: 0;
+        }
+        
+        a {
+            color: black;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+            color: black;
+        }
+        
+        body {
+            font-family: cursive;
+            background-color: lightblue;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-sm bg-dark">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <p class="nav-link1" href="#"><b>Welcome to URL Shortener</b></p>
+            </li>
+            <li class="nav-item">
+                <p class="nav-link" href="#"></p>
+            </li>
+            <li class="nav-item">
+                <p class="nav-link" href="#"></p>
+            </li>
+        </ul>
+
+        <button class="btn btn-warning float-right" onclick="logout()">Logout</button>
+
+    </nav>
+    <br>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="col">
+
+                    <table class='center'>
+                        <tr>
+                            <td></td>
+                            <td><a href="#" onclick="displaydashBoard()">Click this link to display the count of URL's Created</a></td>
+
+                        </tr>
+                        <tr></tr>
+                        <tr>
+
+                            <td><label for="shortener">Provide Long URL<span class="mand">*</span></label></td>
+                            <td><input type=text id=longurl></td>
+                        </tr>
+
+                        <tr>
+                            <td></td>
+                            <td>
+                                <button class="btn btn-warning" onclick="displayURLShortening()">Create Short URL</button></td>
+                            <td></td>
+                            <td>
+                                <span><b id=bold></b></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+
+                            </td>
+                        </tr>
+                    </table>
+                    <p id='count' class='bold'></p>
+                    <b id=bold></b>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+
+            </div>
+        </div>
+    </div>
+    <div class="table1">
+        <table class='table table-dark' border=1 id='data'>
+            <tr>
+                <th>Long Url</th>
+                <th>Short Url</th>
+            </tr>
+
+        </table>
+    </div>
+    <script src="login.js"></script>
+    <script>
+        let countday = [];
+        let countmonths = [];
+
+
+
+        async function displaydashBoard() {
+            let email = localStorage.getItem("email");
+            let token = localStorage.getItem("token");
+            countday = [];
+            countmonths = [];
+            let data2 = {
+                email: email,
+                token: token
+            };
+            let loginData1 = await fetch("http://localhost:3001/register/dashboard", {
+                method: "POST",
+                body: JSON.stringify(data2),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            let loginRes1 = await loginData1.json();
+            countday.push(loginRes1.day);
+            countmonths.push(loginRes1.month);
+            let month_numbers_json = {
+                "1": "January",
+                "2": "February",
+                "3": "March",
+                "4": "April",
+                "5": "May",
+                "6": "June",
+                "7": "July",
+                "8": "August",
+                "9": "September",
+                "10": "October",
+                "11": "November",
+                "12": "December"
+            }
+            document.getElementById("count").innerHTML = "<b>List of URL's Created till date</b><hr>";
+            document.getElementById("count").innerHTML += "<br><b>URL Created Per Day as below:</b>"
+
+            for (let i = 0; i < countday.length; i++) {
+                let countJson = countday[i];
+                for (key in countJson) {
+                    let val = countJson[key];
+                    let month_data = key.split("/");
+                    let month = month_numbers_json[month_data[1]];
+                    document.getElementById("count").innerHTML += `<p>${(i+1)}.)&nbsp;${month_data[0]}&nbsp;&nbsp;${month}&nbsp;&nbsp;${month_data[2]}:&nbsp;&nbsp;${val}</p>`;
+
+                }
+            }
+            document.getElementById("count").innerHTML += "<br><b>URL Created Per Month as below:</b>"
+            for (let i = 0; i < countmonths.length; i++) {
+                let countJson = countmonths[i];
+                for (key in countJson) {
+                    let val = countJson[key];
+                    let month_data = key.split("/");
+                    let month = month_numbers_json[month_data[0]];
+                    document.getElementById("count").innerHTML += `<p>${(i+1)}.)&nbsp;&nbsp;${month}&nbsp;&nbsp;${month_data[1]}:&nbsp;&nbsp;${val}</p>`;
+
+                }
+            }
+
+        }
+        window.onload = async function displayURL() {
+            // console.log(localStorage.getItem("email"));
+            let data2 = {
+                email: localStorage.getItem("email"),
+                token: localStorage.getItem("token")
+            };
+            let loginData1 = await fetch("http://localhost:3001/register/displayURL", {
+                method: "POST",
+                body: JSON.stringify(data2),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            let loginRes1 = await loginData1.json();
+            let data = loginRes1.message;
+            for (let i = 0; i < data.length; i++) {
+                // console.log(data[i].longURL);
+                // console.log(document.getElementById("longurldata"));
+                document.getElementById("data").innerHTML += `<tr><td>${data[i].longURL}</td><td>${data[i].shortURL}</td></tr>`;
+            }
+        }
+
+        async function displayURLShortening() {
+            let longurl = document.getElementById("longurl").value.toString();
+            if (longurl == "") {
+                document.getElementById("longurl").setAttribute("style", "border:2px solid red");
+            } else {
+                let data = {
+                    email: localStorage.getItem("email"),
+                    longURL: longurl,
+                    token: localStorage.getItem("token")
+                }
+                let UrlData = await fetch("http://localhost:3001/register/storeURL", {
+                    method: "POST",
+                    body: JSON.stringify(data),
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                });
+                let UrlRes = await UrlData.json();
+                console.log(UrlRes.message);
+
+            }
+            let data2 = {
+                email: localStorage.getItem("email"),
+                token: localStorage.getItem("token")
+            };
+            let loginData1 = await fetch("http://localhost:3001/register/displayURL", {
+                method: "POST",
+                body: JSON.stringify(data2),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            let loginRes1 = await loginData1.json();
+            // console.log(loginRes1.message);
+            let data4 = loginRes1.message;
+            //console.log(document.getElementById("data").innerHTML);
+            for (let i = 0; i < data4.length; i++) {
+                //  console.log(data4[i].longURL);
+                // console.log(document.getElementById("longurldata"));
+                if (i == 0) {
+                    document.getElementById("data").innerHTML = `<tr>
+            <th>Long Url</th>
+            <th>Short Url</th>
+        </tr><tr><td>${data4[i].longURL}</td><td>${data4[i].shortURL}</td></tr>`;
+                } else {
+                    document.getElementById("data").innerHTML += `<tr><td>${data4[i].longURL}</td><td>${data4[i].shortURL}</td></tr>`;
+
+                }
+
+            }
+
+        }
+
+        function logout() {
+            localStorage.removeItem("email");
+            localStorage.removeItem("token");
+            location.replace("index.html");
+        }
+    </script>
+</body>
+
+</html>

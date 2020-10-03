@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .container {
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        @media only screen and (max-width: 1150px) {
+            .table1 {
+                overflow: scroll;
+            }
+            .top {
+                margin-top: 10px;
+            }
+        }
+        
+        .col1 {
+            margin: 0;
+            background-color: transparent;
+            text-align: center;
+        }
+        
+        .btn1 {
+            text-align: right;
+        }
+        
+        #bold {
+            position: relative;
+            top: 50px;
+        }
+        
+        #bold1 {
+            position: relative;
+            top: 100px;
+            left: -300px;
+        }
+        
+        .mand {
+            color: red
+        }
+        
+        .bold {
+            text-align: center;
+        }
+        
+        input {
+            width: 300px;
+        }
+        
+        .table-dark {
+            border: 5px solid lightgrey;
+            float: left;
+        }
+        
+        table.center {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .nav-link1 {
+            margin-top: 10px;
+            color: white
+        }
+        
+        .float-right {
+            margin-left: auto;
+            margin-right: 0;
+        }
+        
+        body {
+            font-family: 'Courgette', cursive;
+            background-color: lightblue;
+        }
+        
+        a {
+            color: black;
+        }
+        
+        body {
+            font-family: cursive;
+            background-color: lightblue;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+            color: black;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-sm bg-dark">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <p class="nav-link1" href="#"><b>Welcome to URL Shortener</b></p>
+            </li>
+
+        </ul>
+
+
+
+    </nav>
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+
+                <table class='center'>
+
+                    <td><label for="EmailID">Email ID (or) UserName<span class="mand">*</span></label></td>
+                    <td><input type=text id=email>
+
+                    </td>
+                    </tr>
+                    <tr>
+                        <td><label for="Password">Password<span class="mand">*</span></label></td>
+                        <td><input type=password id=password></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><a href='#' onclick='forgotPassword()'>Forgot Password</a></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <button class="btn btn-warning" onclick="login()">Sign In</button></td>
+                    </tr>
+
+                    <tr>
+                        <td></td>
+                        <td>
+                            <a href="register.html">Do You Have An Account?SignUp</a>
+                        </td>
+                        <td></td>
+                        <td>
+                            <span><b id=bold></b></span>
+                        </td>
+                        <td>
+                            <span><b id=bold1></b></span>
+                        </td>
+                    </tr>
+
+                </table>
+
+
+
+            </div>
+        </div>
+    </div>
+    <script>
+        async function forgotPassword() {
+            try {
+
+                let email = document.getElementById("email").value.toString();
+                // let password = document.getElementById("password").value.toString();
+
+                if (email == "") {
+                    document.getElementById("email").setAttribute("style", "border:2px solid red");
+                    alert("Mandatory fields Cannot be null");
+                } else {
+                    let data = {
+                        email: email,
+                        token: localStorage.getItem("token")
+                    }
+                    let loginData = await fetch("http://localhost:3001/register/forgotPassword", {
+                        method: "POST",
+                        body: JSON.stringify(data),
+                        headers: {
+                            "Content-Type": "application/json",
+                        }
+                    });
+                    let loginRes = await loginData.json();
+                    let checked = false;
+                    console.log(loginRes);
+                    if (loginRes.message == "Check your email for changing the password") {
+                        checked = true;
+                        document.getElementById("bold1").innerHTML = "Check your email for changing the password";
+
+                    } else {
+                        document.getElementById("bold1").innerHTML = "Provide Valid Email Address";
+                    }
+                }
+                // if (checked) {
+                //     let loginForgot = await fetch("http://localhost:3001/register/confirm");
+                //     let forgotRes = await loginForgot.json();
+                //     if (forgotRes.message == "Mail Verified") {
+                //         window.location.href = "forgotPassword.html"
+                //     }
+                //     if (forgotRes.message == "Mail not verified") {
+                //         document.getElementById("bold").innerHTML = "Verify Your Mail"
+                //     }
+                // }
+
+
+
+
+            } catch (error) {
+                console.log(error);
+
+            }
+        }
+        async function login() {
+
+
+            try {
+
+                let email = document.getElementById("email").value.toString();
+                let password = document.getElementById("password").value.toString();
+
+                if (email == "" || password == "") {
+
+                    if (email == "") {
+                        document.getElementById("email").setAttribute("style", "border:2px solid red");
+                    }
+                    if (password == "") {
+                        document.getElementById("password").setAttribute("style", "border:2px solid red");
+                    }
+
+                    alert("Mandatory fields Cannot be null");
+                } else {
+                    let data = {
+                        email: email,
+                        password: password
+                    }
+                    let loginData = await fetch("http://localhost:3001/register/login", {
+                        method: "POST",
+                        body: JSON.stringify(data),
+                        headers: {
+                            "Content-Type": "application/json",
+                        }
+                    });
+                    let loginRes = await loginData.json();
+
+                    if (loginRes.message == "Success") {
+                        console.log(loginRes.token);
+                        // document.getElementById("bold").innerHTML = "Successful";
+
+
+                        if (localStorage.getItem("email") != null)
+                            localStorage.removeItem("email");
+                        if (localStorage.getItem("token") != null)
+                            localStorage.removeItem("token");
+                        localStorage.setItem("email", email);
+                        localStorage.setItem("token", loginRes.token);
+
+
+                        location.replace("dash.html");
+
+                    }
+                    if (loginRes.message == "Username or Password is incorrect") {
+                        document.getElementById("bold").innerHTML = "Username or Password is incorrect";
+                    }
+                    if (loginRes.message == "User not found") {
+                        document.getElementById("bold").innerHTML = "User not found";
+
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+
+            }
+
+        }
+    </script>
+
+    <script src="login.js"></script>
+</body>
+
+</html>
