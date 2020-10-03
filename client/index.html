@@ -170,7 +170,7 @@
                         email: email,
                         token: localStorage.getItem("token")
                     }
-                    let loginData = await fetch("http://localhost:3001/register/forgotPassword", {
+                    let loginData = await fetch("http://localhost:3001/forgotPassword", {
                         method: "POST",
                         body: JSON.stringify(data),
                         headers: {
@@ -182,14 +182,16 @@
                     console.log(loginRes);
                     if (loginRes.message == "Check your email for changing the password") {
                         checked = true;
+                        document.getElementById("bold").innerHTML = "";
                         document.getElementById("bold1").innerHTML = "Check your email for changing the password";
 
                     } else {
+                        document.getElementById("bold").innerHTML = "";
                         document.getElementById("bold1").innerHTML = "Provide Valid Email Address";
                     }
                 }
                 // if (checked) {
-                //     let loginForgot = await fetch("http://localhost:3001/register/confirm");
+                //     let loginForgot = await fetch("http://localhost:3001/confirm");
                 //     let forgotRes = await loginForgot.json();
                 //     if (forgotRes.message == "Mail Verified") {
                 //         window.location.href = "forgotPassword.html"
@@ -230,7 +232,7 @@
                         email: email,
                         password: password
                     }
-                    let loginData = await fetch("http://localhost:3001/register/login", {
+                    let loginData = await fetch("http://localhost:3001/login", {
                         method: "POST",
                         body: JSON.stringify(data),
                         headers: {
@@ -256,9 +258,11 @@
 
                     }
                     if (loginRes.message == "Username or Password is incorrect") {
+                        document.getElementById("bold1").innerHTML = "";
                         document.getElementById("bold").innerHTML = "Username or Password is incorrect";
                     }
                     if (loginRes.message == "User not found") {
+                        document.getElementById("bold1").innerHTML = "";
                         document.getElementById("bold").innerHTML = "User not found";
 
                     }

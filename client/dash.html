@@ -34,7 +34,9 @@
         
         #bold {
             position: relative;
-            top: 50px;
+            top: -100px;
+            left: -300px;
+            text-align: center;
         }
         
         .mand {
@@ -165,6 +167,7 @@
 
 
         async function displaydashBoard() {
+            document.getElementById("bold").innerHTML = " ";
             let email = localStorage.getItem("email");
             let token = localStorage.getItem("token");
             countday = [];
@@ -173,7 +176,7 @@
                 email: email,
                 token: token
             };
-            let loginData1 = await fetch("http://localhost:3001/register/dashboard", {
+            let loginData1 = await fetch("http://localhost:3001/dashboard", {
                 method: "POST",
                 body: JSON.stringify(data2),
                 headers: {
@@ -223,13 +226,76 @@
             }
 
         }
+
+        window.onload = async function dashBoard() {
+            let email = localStorage.getItem("email");
+            let token = localStorage.getItem("token");
+            countday = [];
+            countmonths = [];
+            let data2 = {
+                email: email,
+                token: token
+            };
+            let loginData1 = await fetch("http://localhost:3001/dashboard", {
+                method: "POST",
+                body: JSON.stringify(data2),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            let loginRes1 = await loginData1.json();
+            countday.push(loginRes1.day);
+            countmonths.push(loginRes1.month);
+            let month_numbers_json = {
+                "1": "January",
+                "2": "February",
+                "3": "March",
+                "4": "April",
+                "5": "May",
+                "6": "June",
+                "7": "July",
+                "8": "August",
+                "9": "September",
+                "10": "October",
+                "11": "November",
+                "12": "December"
+            }
+            document.getElementById("count").innerHTML = "<b>List of URL's Created till date</b><hr>";
+            document.getElementById("count").innerHTML += "<br><b>URL Created Per Day as below:</b>"
+
+            for (let i = 0; i < countday.length; i++) {
+                let countJson = countday[i];
+                for (key in countJson) {
+                    let val = countJson[key];
+                    let month_data = key.split("/");
+                    let month = month_numbers_json[month_data[1]];
+                    document.getElementById("count").innerHTML += `<p>${(i+1)}.)&nbsp;${month_data[0]}&nbsp;&nbsp;${month}&nbsp;&nbsp;${month_data[2]}:&nbsp;&nbsp;${val}</p>`;
+
+                }
+            }
+            document.getElementById("count").innerHTML += "<br><b>URL Created Per Month as below:</b>"
+            for (let i = 0; i < countmonths.length; i++) {
+                let countJson = countmonths[i];
+                for (key in countJson) {
+                    let val = countJson[key];
+                    let month_data = key.split("/");
+                    let month = month_numbers_json[month_data[0]];
+                    document.getElementById("count").innerHTML += `<p>${(i+1)}.)&nbsp;&nbsp;${month}&nbsp;&nbsp;${month_data[1]}:&nbsp;&nbsp;${val}</p>`;
+
+                }
+            }
+
+        }
+
+
         window.onload = async function displayURL() {
             // console.log(localStorage.getItem("email"));
+            document.getElementById("bold").innerHTML = " ";
             let data2 = {
                 email: localStorage.getItem("email"),
                 token: localStorage.getItem("token")
             };
-            let loginData1 = await fetch("http://localhost:3001/register/displayURL", {
+            let loginData1 = await fetch("http://localhost:3001/displayURL", {
                 method: "POST",
                 body: JSON.stringify(data2),
                 headers: {
@@ -238,14 +304,20 @@
             });
             let loginRes1 = await loginData1.json();
             let data = loginRes1.message;
-            for (let i = 0; i < data.length; i++) {
-                // console.log(data[i].longURL);
-                // console.log(document.getElementById("longurldata"));
-                document.getElementById("data").innerHTML += `<tr><td>${data[i].longURL}</td><td>${data[i].shortURL}</td></tr>`;
+            if (data == "No data found") {
+                document.getElementById("data").innerHTML = "<tr><th>Long URL</th><th>Short URL</th></tr><tr><td>No data Found</td><td>No Data Found</td></tr>"
+
+            } else {
+                for (let i = 0; i < data.length; i++) {
+                    // console.log(data[i].longURL);
+                    // console.log(document.getElementById("longurldata"));
+                    document.getElementById("data").innerHTML += `<tr><td>${data[i].longURL}</td><td>${data[i].shortURL}</td></tr>`;
+                }
             }
         }
 
         async function displayURLShortening() {
+            document.getElementById("bold").innerHTML = " ";
             let longurl = document.getElementById("longurl").value.toString();
             if (longurl == "") {
                 document.getElementById("longurl").setAttribute("style", "border:2px solid red");
@@ -255,7 +327,7 @@
                     longURL: longurl,
                     token: localStorage.getItem("token")
                 }
-                let UrlData = await fetch("http://localhost:3001/register/storeURL", {
+                let UrlData = await fetch("http://localhost:3001/storeURL", {
                     method: "POST",
                     body: JSON.stringify(data),
                     headers: {
@@ -263,14 +335,25 @@
                     }
                 });
                 let UrlRes = await UrlData.json();
-                console.log(UrlRes.message);
+                if (UrlRes.message == "Provided URL already exists") {
+                    document.getElementById("bold").innerHTML = "Provided URL already exists"
+
+                }
+                if (UrlRes.message == "Provide a Valid URL") {
+                    document.getElementById("bold").innerHTML = "Provide a Valid URL"
+
+                }
+                if (UrlRes.message == "URL data inserted") {
+                    document.getElementById("bold").innerHTML = "URL data inserted"
+
+                }
 
             }
             let data2 = {
                 email: localStorage.getItem("email"),
                 token: localStorage.getItem("token")
             };
-            let loginData1 = await fetch("http://localhost:3001/register/displayURL", {
+            let loginData1 = await fetch("http://localhost:3001/displayURL", {
                 method: "POST",
                 body: JSON.stringify(data2),
                 headers: {
@@ -280,20 +363,26 @@
             let loginRes1 = await loginData1.json();
             // console.log(loginRes1.message);
             let data4 = loginRes1.message;
+            if (data4 == "No data found") {
+                document.getElementById("data").innerHTML = "<tr><th>Long URL</th><th>Short URL</th></tr><tr><td>No data Found</td><td>No Data Found</td></tr>"
+
+            }
             //console.log(document.getElementById("data").innerHTML);
-            for (let i = 0; i < data4.length; i++) {
-                //  console.log(data4[i].longURL);
-                // console.log(document.getElementById("longurldata"));
-                if (i == 0) {
-                    document.getElementById("data").innerHTML = `<tr>
+            else {
+                for (let i = 0; i < data4.length; i++) {
+                    //  console.log(data4[i].longURL);
+                    // console.log(document.getElementById("longurldata"));
+                    if (i == 0) {
+                        document.getElementById("data").innerHTML = `<tr>
             <th>Long Url</th>
             <th>Short Url</th>
         </tr><tr><td>${data4[i].longURL}</td><td>${data4[i].shortURL}</td></tr>`;
-                } else {
-                    document.getElementById("data").innerHTML += `<tr><td>${data4[i].longURL}</td><td>${data4[i].shortURL}</td></tr>`;
+                    } else {
+                        document.getElementById("data").innerHTML += `<tr><td>${data4[i].longURL}</td><td>${data4[i].shortURL}</td></tr>`;
+
+                    }
 
                 }
-
             }
 
         }

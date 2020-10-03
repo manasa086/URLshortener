@@ -1,4 +1,4 @@
-var PORT = process.env.PORT || 5000;
+var PORT = process.env.PORT || 3001;
 // var express = require('express');
 // var app = express();
 
@@ -37,10 +37,11 @@ const app = express();
 const bodyParser = require("body-parser");
 const mongoClient = mongodb.MongoClient;
 const url = "mongodb://localhost:27017";
+const dbname = "urlshortening";
 app.use(bodyParser.json());
 
 
-
+require("dotenv").config();
 
 
 app.use(cors());
@@ -58,6 +59,9 @@ app.get("/", async function(req, res) {
     try {
         client = await mongoClient.connect(url);
         let db = client.db(dbname);
+        res.json({
+            message: "Hello",
+        })
         client.close();
     } catch (error) {
         if (client)
@@ -152,7 +156,7 @@ async function sendMail(mail_to_send, req, res) {
             rejectUnauthorized: false
         }
     });
-    let url = "http://localhost:3001/register/MailVerify";
+    let url = "http://localhost:3001/MailVerify";
     let info = await transporter.sendMail({
         from: process.env.GMAIL_USER,
         to: mail_to_send,
@@ -185,7 +189,7 @@ app.get("/MailVerify", async function(req, res) {
         insertData.pop();
         console.log(insertData)
         client.close();
-        res.sendFile(path.join(__dirname + '/front_end/index.html'));
+        res.sendFile(path.join(__dirname + '/client/index.html'));
     } catch (error) {
         if (client)
             client.close();
@@ -196,21 +200,21 @@ app.get("/MailVerify", async function(req, res) {
 
 });
 app.get("/dash.html", function(req, res) {
-    res.sendFile(path.join(__dirname + '/front_end/dash.html'));
+    res.sendFile(path.join(__dirname + '/client/dash.html'));
 });
 
 app.get("/index.html", function(req, res) {
-    res.sendFile(path.join(__dirname + '/front_end/index.html'));
+    res.sendFile(path.join(__dirname + '/client/index.html'));
 });
 app.get("/confirmation/register.html", function(req, res) {
-    res.sendFile(path.join(__dirname + '/front_end/register.html'));
+    res.sendFile(path.join(__dirname + '/client/register.html'));
 });
 app.get("/confirmation/index.html", function(req, res) {
-    res.sendFile(path.join(__dirname + '/front_end/index.html'));
+    res.sendFile(path.join(__dirname + '/client/index.html'));
 });
 
 app.get("/confirmation/dash.html", function(req, res) {
-    res.sendFile(path.join(__dirname + '/front_end/dash.html'));
+    res.sendFile(path.join(__dirname + '/client/dash.html'));
 });
 app.post("/login", async function(req, res) {
     let client;
@@ -286,7 +290,7 @@ app.post("/storeURL", authenticate, async function(req, res) {
         if (find.length == 0) {
             if (validURL.isUri(req.body.longURL)) {
                 // http://localhost:5000
-                let shortURL = "http://localhost:3001" + "/register/" + shortcode;
+                let shortURL = "http://localhost:3001/" + shortcode;
                 let insertData = await db.collection("url").insertOne({
                     email: req.body.email,
                     longURL: req.body.longURL,
@@ -415,7 +419,7 @@ app.post("/forgotPassword", async function(req, res) {
                     rejectUnauthorized: false
                 }
             });
-            let url = `http://localhost:3001/register/confirmation/${token}`;
+            let url = `http://localhost:3001/confirmation/${token}`;
             let email = await db.collection("forgotpassword").insertOne({ email: req.body.email, url: url });
             let info = await transporter.sendMail({
                 from: process.env.GMAIL_USER,
@@ -449,14 +453,14 @@ app.get("/confirmation/:token", async function(req, res) {
     try {
         client = await mongoClient.connect(url);
         let db = client.db(dbname);
-        let url_speci = `http://localhost:3001/register/confirmation/${req.params.token}`;
+        let url_speci = `http://localhost:3001/confirmation/${req.params.token}`;
         let email_ver = jwt.verify(req.params.token, process.env.EMAIL_SECRET);
         console.log(email_ver);
-        let removeData = await db.collection("forgotpassword").remove({ email: email_ver.email, url: url_speci });
+        let removeData = await db.collection("forgotpassword").deleteOne({ email: email_ver.email, url: url_speci });
         client.close();
         confirm_forgotPass = true;
         emailforgotpass = email_ver.email;
-        res.sendFile(path.join(__dirname + '/front_end/forgotPassword.html'));
+        res.sendFile(path.join(__dirname + '/client/forgotPassword.html'));
     } catch (error) {
         if (client)
             client.close();
@@ -515,7 +519,6 @@ app.post("/changePassword", async function(req, res) {
         client = await mongoClient.connect(url);
         let db = client.db(dbname);
         if (emailforgotpass != req.body.email) {
-            emailforgotpass = "";
             res.json({
                 message: "Email ID does not Match. Please Provide Same Email ID",
             });
